@@ -106,8 +106,12 @@ async function handleServe(req, res, pathname) {
     const filename = pathname.replace('/file/', '');
     if (!filename) return res.status(404).send('Not found');
 
-    const blob = await head(filename);
-    if (!blob) return res.status(404).send('Not found');
+    let blob;
+    try {
+      blob = await head(filename);
+    } catch {
+      return res.status(404).send('Not found');
+    }
 
     const response = await fetch(blob.url);
     if (!response.ok) return res.status(502).send('Upstream error');

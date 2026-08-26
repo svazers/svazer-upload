@@ -66,16 +66,21 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
 app.get('/file/:filename', async (req, res) => {
   try {
     const { head } = require('@vercel/blob');
-    const blob = await head(req.params.filename);
-    if (!blob) return res.status(404).send('Not found');
+    let blob;
+    try {
+      blob = await head(req.params.filename);
+    } catch {
+      return res.status(404).send('Not found');
+    }
 
     const response = await fetch(blob.url);
     if (!response.ok) return res.status(502).send('Upstream error');
 
     res.setHeader('Content-Type', response.headers.get('content-type') || 'application/octet-stream');
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    const buffer = Buffer.from(await response.arrayBuffer());
     res.status(200);
-    response.body.pipe(res);
+    res.end(buffer);
   } catch (err) {
     res.status(500).send('Error');
   }
