@@ -100,6 +100,31 @@ console.log(`URL: ${BASE}/file/${filename}`);
 
 Lihat `example-upload.mjs` untuk contoh lengkap (termasuk `.apk`/`.zip`).
 
+## Contoh curl
+
+### Flow presigned (single upload)
+
+```bash
+# 1. Minta presigned URL
+RESP=$(curl -s -X POST https://svazer-upload.vercel.app/api/request-upload \
+  -H "Content-Type: application/json" \
+  -d '{"fileName":"foto.jpg","fileType":"image/jpeg"}')
+UPLOAD_URL=$(echo "$RESP" | jq -r .uploadUrl)
+FILENAME=$(echo "$RESP" | jq -r .filename)
+
+# 2. Upload langsung ke Blob (single PUT)
+curl -X PUT "$UPLOAD_URL" -H "Content-Type: image/jpeg" --data-binary @foto.jpg
+
+# 3. URL shareable (proxy)
+echo "https://svazer-upload.vercel.app/file/$FILENAME"
+```
+
+### Alternatif: multipart (satu perintah)
+
+```bash
+curl -X POST https://svazer-upload.vercel.app/api/upload -F "file=@foto.jpg"
+```
+
 ## Batasan
 
 | Batasan | Nilai |
