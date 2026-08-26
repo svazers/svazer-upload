@@ -4,6 +4,11 @@ const path = require('path');
 const { Readable } = require('stream');
 const Busboy = require('busboy');
 
+// Vercel project may expose the Blob credentials under custom env names; normalize
+// them to what @vercel/blob expects so the SDK can find the token at runtime.
+process.env.BLOB_READ_WRITE_TOKEN = process.env.BLOB_READ_WRITE_TOKEN || process.env.PEPEK_READ_WRITE_TOKEN;
+process.env.BLOB_STORE_ID = process.env.BLOB_STORE_ID || process.env.PEPEK_STORE_ID;
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
