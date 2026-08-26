@@ -58,7 +58,8 @@ async function handleRequestUpload(req, res) {
 
       const { presignedUrl } = await presignUrl(token, {
         operation: 'put',
-        pathname: storedName
+        pathname: storedName,
+        addRandomSuffix: false
       });
 
       res.status(200).json({
