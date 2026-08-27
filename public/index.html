@@ -329,7 +329,7 @@
           <p class="docs-intro">Unggah file, langsung dapat link <code>/file/&lt;filename&gt;</code>. Semua format didukung, maks 25 MB.</p>
 
           <p class="docs-label">Contoh curl</p>
-          <pre><code class="language-bash">curl -X POST https://svazer-upload.vercel.app/api/upload -F "file=@pepek.jpg"</code></pre>
+          <pre><code class="language-bash">curl -s -X POST https://svazer-upload.vercel.app/api/upload -F "file=@pepek.jpg" | jq -r .url</code></pre>
 
           <p class="docs-label">Contoh Node</p>
           <pre><code class="language-javascript">import fs from 'fs';
@@ -337,11 +337,19 @@
 const form = new FormData();
 form.append('file', new Blob([fs.readFileSync('pepek.jpg')]), 'pepek.jpg');
 
-const { url } = await (await fetch('https://svazer-upload.vercel.app/api/upload', {
-  method: 'POST', body: form
-})).json();
+const res = await fetch('https://svazer-upload.vercel.app/api/upload', { method: 'POST', body: form });
+const data = await res.json();
+console.log(data.url); // https://svazer-upload.vercel.app/file/xxxx.jpg</code></pre>
 
-console.log(url);</code></pre>
+          <p class="docs-label">Response</p>
+          <pre><code class="language-json">{
+  "success": true,
+  "url": "https://svazer-upload.vercel.app/file/xxxx.jpg",
+  "blobUrl": "https://xxxx.public.blob.vercel-storage.com/xxxx.jpg",
+  "filename": "xxxx.jpg",
+  "size": 12345,
+  "mimetype": "image/jpeg"
+}</code></pre>
 
           <p class="docs-label">Endpoint</p>
           <ul class="docs-list">
