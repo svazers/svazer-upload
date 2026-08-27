@@ -326,33 +326,26 @@
       <div class="docs">
         <p class="docs-head">Docs &amp; contoh</p>
         <div class="docs-body">
-          <p class="docs-intro">File diunggah <strong>sekali</strong> langsung ke Blob via presigned URL, lalu disajikan lewat <code>/file/&lt;filename&gt;</code>. Semua format didukung, maks 25 MB.</p>
+          <p class="docs-intro">Unggah file, langsung dapat link <code>/file/&lt;filename&gt;</code>. Semua format didukung, maks 25 MB.</p>
 
-          <p class="docs-label">Contoh curl (presigned)</p>
-          <pre><code class="language-bash">RESP=$(curl -s -X POST https://svazer-upload.vercel.app/api/request-upload \
-  -H 'Content-Type: application/json' \
-  -d '{"fileName":"foto.jpg","fileType":"image/jpeg"}')
-
-curl -X PUT "$(echo "$RESP" | jq -r .uploadUrl)" \
-  -H 'Content-Type: image/jpeg' --data-binary @foto.jpg
-
-echo "https://svazer-upload.vercel.app/file/$(echo "$RESP" | jq -r .filename)"</code></pre>
+          <p class="docs-label">Contoh curl</p>
+          <pre><code class="language-bash">curl -X POST https://svazer-upload.vercel.app/api/upload -F "file=@pepek"</code></pre>
 
           <p class="docs-label">Contoh Node</p>
           <pre><code class="language-javascript">import fs from 'fs';
 
-const { uploadUrl, filename } = await (await fetch('https://svazer-upload.vercel.app/api/request-upload', {
-  method: 'POST', headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ fileName: 'foto.jpg', fileType: 'image/jpeg' })
+const form = new FormData();
+form.append('file', new Blob([fs.readFileSync('pepek')]), 'pepek');
+
+const { url } = await (await fetch('https://svazer-upload.vercel.app/api/upload', {
+  method: 'POST', body: form
 })).json();
 
-await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: fs.readFileSync('foto.jpg') });
-console.log('https://svazer-upload.vercel.app/file/' + filename);</code></pre>
+console.log(url);</code></pre>
 
           <p class="docs-label">Endpoint</p>
           <ul class="docs-list">
-            <li><code>POST /api/request-upload</code> — minta presigned URL</li>
-            <li><code>PUT {uploadUrl}</code> — upload langsung ke Blob</li>
+            <li><code>POST /api/upload</code> — upload file (multipart, field <code>file</code>)</li>
             <li><code>GET /file/:filename</code> — ambil file (proxy)</li>
           </ul>
         </div>
