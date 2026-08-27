@@ -221,6 +221,23 @@
       color: var(--text);
     }
     .docs pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .code-wrap { position: relative; }
+    .code-copy {
+      position: absolute;
+      top: 8px; right: 8px;
+      padding: 4px 9px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+    .code-copy:hover { color: var(--text); border-color: var(--border-hover); }
+    .code-copy.copied { color: #fff; border-color: var(--border-hover); }
     .docs-list { list-style: none; font-size: 12.5px; color: var(--text-secondary); line-height: 1.8; margin: 0; padding: 0; }
     .docs-list li::before { content: '\2022  '; color: var(--border-hover); }
 
@@ -487,6 +504,16 @@ console.log(data.url); // https://svazer-upload.vercel.app/file/xxxx.jpg</code><
       });
     }
 
+    function copyCode(btn) {
+      const code = btn.parentElement.querySelector('code');
+      navigator.clipboard.writeText(code.textContent).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -501,6 +528,18 @@ console.log(data.url); // https://svazer-upload.vercel.app/file/xxxx.jpg</code><
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
+
+    document.querySelectorAll('.docs pre').forEach(pre => {
+      const wrap = document.createElement('div');
+      wrap.className = 'code-wrap';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      const btn = document.createElement('button');
+      btn.className = 'code-copy';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', () => copyCode(btn));
+      wrap.appendChild(btn);
+    });
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script>hljs.highlightAll();</script>
