@@ -191,17 +191,11 @@
       border-top: 1px solid var(--border);
       padding-top: 16px;
     }
-    .docs summary {
-      cursor: pointer;
+    .docs-head {
       font-size: 13px;
       font-weight: 500;
       color: var(--text-secondary);
-      list-style: none;
-      user-select: none;
     }
-    .docs summary::-webkit-details-marker { display: none; }
-    .docs summary::before { content: '+  '; }
-    .docs[open] summary::before { content: '\2212  '; }
     .docs-body { margin-top: 14px; }
     .docs-intro { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; }
     .docs-intro code, .docs code {
@@ -329,8 +323,8 @@
         </span>
       </button>
 
-      <details class="docs">
-        <summary>Docs &amp; contoh</summary>
+      <div class="docs">
+        <p class="docs-head">Docs &amp; contoh</p>
         <div class="docs-body">
           <p class="docs-intro">File diunggah <strong>sekali</strong> langsung ke Blob via presigned URL, lalu disajikan lewat <code>/file/&lt;filename&gt;</code>. Semua format didukung, maks 25 MB.</p>
 
@@ -374,7 +368,7 @@ console.log(`${BASE}/file/${filename}`);</code></pre>
             <li><code>GET /file/:filename</code> — ambil file (proxy)</li>
           </ul>
         </div>
-      </details>
+      </div>
 
       <div class="result" id="result">
         <div class="result-header">
