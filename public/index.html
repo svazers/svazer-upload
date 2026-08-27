@@ -330,36 +330,24 @@
 
           <p class="docs-label">Contoh curl (presigned)</p>
           <pre><code class="language-bash">RESP=$(curl -s -X POST https://svazer-upload.vercel.app/api/request-upload \
-  -H "Content-Type: application/json" \
+  -H 'Content-Type: application/json' \
   -d '{"fileName":"foto.jpg","fileType":"image/jpeg"}')
-UPLOAD_URL=$(echo "$RESP" | jq -r .uploadUrl)
-FILENAME=$(echo "$RESP" | jq -r .filename)
 
-curl -X PUT "$UPLOAD_URL" -H "Content-Type: image/jpeg" --data-binary @foto.jpg
+curl -X PUT "$(echo "$RESP" | jq -r .uploadUrl)" \
+  -H 'Content-Type: image/jpeg' --data-binary @foto.jpg
 
-echo "https://svazer-upload.vercel.app/file/$FILENAME"</code></pre>
+echo "https://svazer-upload.vercel.app/file/$(echo "$RESP" | jq -r .filename)"</code></pre>
 
           <p class="docs-label">Contoh Node</p>
           <pre><code class="language-javascript">import fs from 'fs';
 
-const BASE = 'https://svazer-upload.vercel.app';
-const file = fs.readFileSync('foto.jpg');
-const fileName = 'foto.jpg';
-const mime = 'image/jpeg';
+const { uploadUrl, filename } = await (await fetch('https://svazer-upload.vercel.app/api/request-upload', {
+  method: 'POST', headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ fileName: 'foto.jpg', fileType: 'image/jpeg' })
+})).json();
 
-// 1. Minta presigned URL
-const req = await fetch(`${BASE}/api/request-upload`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ fileName, fileType: mime })
-});
-const { uploadUrl, filename } = await req.json();
-
-// 2. Upload langsung ke Blob (single PUT)
-await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': mime }, body: file });
-
-// 3. URL shareable (proxy)
-console.log(`${BASE}/file/${filename}`);</code></pre>
+await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: fs.readFileSync('foto.jpg') });
+console.log('https://svazer-upload.vercel.app/file/' + filename);</code></pre>
 
           <p class="docs-label">Endpoint</p>
           <ul class="docs-list">
