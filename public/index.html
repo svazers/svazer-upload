@@ -336,6 +336,28 @@ curl -X PUT "$UPLOAD_URL" -H "Content-Type: image/jpeg" --data-binary @foto.jpg
 
 echo "https://svazer-upload.vercel.app/file/$FILENAME"</code></pre>
 
+          <p class="docs-label">Contoh Node</p>
+          <pre><code>import fs from 'fs';
+
+const BASE = 'https://svazer-upload.vercel.app';
+const file = fs.readFileSync('foto.jpg');
+const fileName = 'foto.jpg';
+const mime = 'image/jpeg';
+
+// 1. Minta presigned URL
+const req = await fetch(`${BASE}/api/request-upload`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ fileName, fileType: mime })
+});
+const { uploadUrl, filename } = await req.json();
+
+// 2. Upload langsung ke Blob (single PUT)
+await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': mime }, body: file });
+
+// 3. URL shareable (proxy)
+console.log(`${BASE}/file/${filename}`);</code></pre>
+
           <p class="docs-label">Endpoint</p>
           <ul class="docs-list">
             <li><code>POST /api/request-upload</code> — minta presigned URL</li>
